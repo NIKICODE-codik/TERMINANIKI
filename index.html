@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <link rel="stylesheet" href="style.css">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>фейк платёж NIKITERMINAL</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#000000;color:#edf2ff;font:16px system-ui;display:grid;min-height:100vh;place-items:center;padding:20px}
+main{width:min(100%,520px);background:#000000;border:1px solid #000000;border-radius:30px;padding:25px}
+h1{margin:0 0 0px}.sub{color:#aab8d3;margin:0 0 10px}.warning{background:#910000;color:#ff9b9b;padding:12px;border-radius:90px;font-weight:700;text-align:center;margin:16px 0}
+label{display:block;margin:14px 0 6px;color:#c5d0e5}input{width:100%;padding:13px;border-radius:10px;border:1px solid #43516e;background:#0d1426;color:white;font-size:17px}
+button{margin:0 0 0px;}
+#status{margin-top:18px;padding:13px;border-radius:12px;background:#0d1426;min-height:48px;white-space:pre-wrap}.tiny{font-size:12px;color:#8fa0bf;margin-top:15px}
+</style></head>
+<body><main>
+<h1>NIKITERMINAL Control</h1><p class="sub">Фейк платежи</p>
+<div class="warning">DEMO ONLY · Это всё фейк нечего не принимается</div>
+<label>Render server URL</label><input id="server" placeholder="https://your-service.onrender.com">
+<label>Ключ панели (DEMO_ADMIN_KEY)</label><input id="key" type="password" placeholder="Секретный ключ">
+<label>6-значный код с телефона</label><input id="code" inputmode="numeric" maxlength="6" placeholder="123456">
+<label>Сумма для анимации (фиктивная) макс:999999.99</label><input id="amount" type="number" min="0.01" max="999999.99" step="0.01" placeholder="Пример:240.99">
+<button id="send">ЗАПУСК</button>
+<div id="status">Ожидание подключения</div>
+<p class="tiny">Сумма существует только внутри демонстрации. Денежные средства не списываются и не переводятся.</p>
+<p class="tiny">© NIKIPYTHON 2026</p>
+</main>
+<script>
+const $=id=>document.getElementById(id), status=$('status');
+$('send').onclick=async()=>{
+ const base=$('server').value.trim().replace(/\/+$/,'');
+ const code=$('code').value.trim(), amount=Number($('amount').value), key=$('key').value;
+ if(!base||!/^\d{6}$/.test(code)||!Number.isFinite(amount)||amount<=0){status.textContent='Неправильно, проверти что-то ';return}
+ status.textContent='Отправка команды DEMO…';
+ try{
+  const r=await fetch(base+'/api/charge-demo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code,amount,admin_key:key})});
+  const d=await r.json(); if(!r.ok)throw Error(d.error||'Ошибка сервера');
+  status.textContent=`✓ DEMO-команда отправлена\nСумма: ${amount.toFixed(2)}\nНАСТОЯЩИЕ ДЕНЬГИ НЕ ПЕРЕМЕЩАЛИСЬ.`;
+ }catch(e){status.textContent='Ошибка: '+e.message}
+};
+</script></body></html>
